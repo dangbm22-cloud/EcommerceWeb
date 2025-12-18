@@ -1,0 +1,41 @@
+﻿@{
+    Layout = "_AdminLayout"; // dùng layout admin riêng, nếu chưa có thì tạm thời để "_Layout"
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Trang quản trị</h2>
+    <p class="lead">Xin chào Admin, đây là trang tổng quan hệ thống.</p>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Quản lý sản phẩm</h5>
+                    <p class="card-text">Thêm, sửa, xóa và xem danh sách sản phẩm.</p>
+                    <a asp-controller="AdminProduct" asp-action="Index" class="btn btn-primary">Đi tới</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Quản lý đơn hàng</h5>
+                    <p class="card-text">Theo dõi và xử lý các đơn hàng của khách.</p>
+                    <a asp-controller="Order" asp-action="Manage" class="btn btn-primary">Đi tới</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Doanh thu</h5>
+                    <p class="card-text">Xem báo cáo doanh thu và thống kê bán hàng.</p>
+                    <a asp-controller="Admin" asp-action="Revenue" class="btn btn-primary">Đi tới</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

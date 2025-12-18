@@ -1,0 +1,36 @@
+﻿@model EcommerceWeb.ViewModels.RegisterViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Đăng ký";
+}
+
+<h2>Đăng ký</h2>
+<form asp-action="Register" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Đăng ký</button>
+</form>
+
+<p>Đã có tài khoản? <a asp-action="Login">Đăng nhập</a></p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
