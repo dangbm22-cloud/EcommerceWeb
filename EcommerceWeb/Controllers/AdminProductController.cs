@@ -120,59 +120,99 @@ namespace EcommerceWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // 📌 Sửa sản phẩm (GET)
+        // Phần sửa sản phẩm (GET)
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            var product = _context.Products.Find(id);
+            if (id == null) return NotFound();
+
+            var product = await _context.Products.FindAsync(id);
             if (product == null) return NotFound();
 
             ViewBag.Categories = _context.Categories.ToList();
             return View(product);
         }
 
-        // 📌 Sửa sản phẩm (POST + upload ảnh mới)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Product product, IFormFile? ImageFile)
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile? ImageFile)
         {
-            ViewBag.Categories = _context.Categories.ToList();
+            if (id != product.Id) return NotFound();
+
+            var category = await _context.Categories.FindAsync(product.CategoryId);
+            if (category == null)
+            {
+                ModelState.AddModelError(nameof(product.CategoryId), "Danh mục không hợp lệ.");
+            }
 
             if (!ModelState.IsValid)
             {
+                ViewBag.Categories = _context.Categories.ToList();
                 return View(product);
             }
 
-            var category = _context.Categories.Find(product.CategoryId);
-
-            if (ImageFile != null && ImageFile.Length > 0 && category != null)
+            try
             {
-                var webRoot = _env.WebRootPath;
-                var categoryFolderName = Slugify(category.Name);
-                var folderPath = Path.Combine(webRoot, "img", "product", categoryFolderName);
-
-                if (!Directory.Exists(folderPath))
+                // Nếu có upload ảnh mới
+                if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    Directory.CreateDirectory(folderPath);
+                    const long maxBytes = 5 * 1024 * 1024;
+                    if (ImageFile.Length > maxBytes)
+                    {
+                        ModelState.AddModelError("ImageFile", "Ảnh quá lớn, tối đa 5MB.");
+                        ViewBag.Categories = _context.Categories.ToList();
+                        return View(product);
+                    }
+
+                    var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+                    if (!allowed.Contains(ImageFile.ContentType))
+                    {
+                        ModelState.AddModelError("ImageFile", "Định dạng ảnh không hỗ trợ (chỉ JPG, PNG, WEBP).");
+                        ViewBag.Categories = _context.Categories.ToList();
+                        return View(product);
+                    }
+
+                    var webRoot = _env.WebRootPath;
+                    var categoryFolderName = Slugify(category!.Name);
+                    var folderPath = Path.Combine(webRoot, "img", "product", categoryFolderName);
+
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+
+                    var extension = Path.GetExtension(ImageFile.FileName);
+                    var baseName = Slugify(product.Name);
+                    var safeFileName = $"{baseName}-{Guid.NewGuid()}{extension}";
+                    var filePath = Path.Combine(folderPath, safeFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ImageFile.CopyToAsync(stream);
+                    }
+
+                    product.ImageUrl = $"/img/product/{categoryFolderName}/{safeFileName}";
+                }
+                else
+                {
+                    // Nếu không upload ảnh mới thì giữ nguyên ảnh cũ
+                    var oldProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+                    product.ImageUrl = oldProduct?.ImageUrl;
                 }
 
-                var extension = Path.GetExtension(ImageFile.FileName);
-                var baseName = Slugify(product.Name);
-                var safeFileName = $"{baseName}-{Guid.NewGuid()}{extension}";
-                var filePath = Path.Combine(folderPath, safeFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    ImageFile.CopyTo(stream);
-                }
-
-                product.ImageUrl = $"/img/product/{categoryFolderName}/{safeFileName}";
+                _context.Update(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            _context.Products.Update(product);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Products.Any(e => e.Id == product.Id))
+                    return NotFound();
+                else
+                    throw;
+            }
         }
+
 
         // 📌 Xóa sản phẩm
         [HttpGet]
