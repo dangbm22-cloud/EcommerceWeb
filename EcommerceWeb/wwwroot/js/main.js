@@ -1,4 +1,4 @@
-/*  ---------------------------------------------------
+﻿/*  ---------------------------------------------------
     Template Name: Ogani
     Description:  Ogani eCommerce  HTML Template
     Author: Colorlib
@@ -122,11 +122,12 @@
         margin: 0,
         items: 1,
         dots: false,
-        nav: true,
-        navText: ["<span class='fa fa-angle-left'><span/>", "<span class='fa fa-angle-right'><span/>"],
+        nav: false, // ❌ Ẩn nút trái/phải
         smartSpeed: 1200,
         autoHeight: false,
-        autoplay: true
+        autoplay: true,
+        autoplayTimeout: 3000,
+        autoplayHoverPause: true
     });
 
     /*-----------------------------

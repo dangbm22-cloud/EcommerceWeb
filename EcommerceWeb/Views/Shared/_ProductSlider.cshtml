@@ -1,0 +1,28 @@
+﻿@model List<EcommerceWeb.Models.Product>
+@{
+    var title = ViewData["SectionTitle"] as string ?? "Sản phẩm";
+}
+
+<div class="section-title">
+    <h2>@title</h2>
+</div>
+<div class="latest-product__slider owl-carousel">
+    @for (int i = 0; i < Model.Count; i += 3)
+    {
+        <div class="latest-product__slider__item">
+            @for (int j = i; j < i + 3 && j < Model.Count; j++)
+            {
+                var item = Model[j];
+                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="latest-product__item">
+                    <div class="latest-product__item__pic">
+                        <img src="@item.ImageUrl" alt="@item.Name" />
+                    </div>
+                    <div class="latest-product__item__text">
+                        <h6>@item.Name</h6>
+                        <span>@string.Format("{0:N0} VND", item.Price)</span>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>

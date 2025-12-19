@@ -1,4 +1,4 @@
-using EcommerceWeb.Data;
+﻿using EcommerceWeb.Data;
 using EcommerceWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +28,19 @@ namespace EcommerceWeb.Controllers
                 .Take(6)
                 .ToList();
 
+            var allProducts = _context.Products
+                .Include(p => p.Category)
+                .ToList(); // Truy vấn trước khi lọc danh sách
+
+            var cheapestProducts = allProducts
+                .GroupBy(p => p.CategoryId)
+                .Select(g => g.OrderBy(p => p.Price).First())
+                .ToList();
+
+
             ViewBag.Featured = featuredProducts;
             ViewBag.Latest = latestProducts;
+            ViewBag.Cheapest = cheapestProducts;
 
             return View();
         }

@@ -1,6 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@{
+    var latest = ViewBag.Latest as List<EcommerceWeb.Models.Product>;
+    var cheapest = ViewBag.Cheapest as List<EcommerceWeb.Models.Product>;
+}
+
 
 <!-- Page Preloder -->
     <div id="preloder">
@@ -173,7 +178,7 @@
                     <div class="col-lg-3 col-md-4 col-sm-6">
                         <div class="featured__item">
                             <div class="featured__item__pic">
-                                <img src="~/img/product/@item.ImageUrl" alt="@item.Name" />
+                            <img src="@item.ImageUrl" alt="@item.Name" />
                                 <ul class="featured__item__pic__hover">
                                     <li><a href="#"><i class="fa fa-heart"></i></a></li>
                                     <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
@@ -212,35 +217,32 @@
         </div> 
     </div>
     <!-- Banner End -->
-    <!-- Latest Product Section Begin -->
-    <section class="latest-product spad">
+    
+    <!--Slider của sp mới nhất và sp rẻ nhất trong từng danh mục-->
+    <section class="product-pair spad">
         <div class="container">
             <div class="row">
-                <div class="col-lg-4 col-md-6">
-                    <div class="latest-product__text">
-                        <h4>Latest Products</h4>
-                        <div class="latest-product__slider owl-carousel">
-                            <div class="latest-prdouct__slider__item">
-                                @foreach (var item in ViewBag.Latest)
-                                {
-                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="~/img/product/@item.ImageUrl" alt="@item.Name" />
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>@item.Name</h6>
-                                            <span>@string.Format("{0:N0} VND", item.Price)</span>
-                                        </div>
-                                    </a>
-                                }
-                            </div>
-                        </div>
-                    </div>
+                <!-- Latest Products -->
+                <div class="col-lg-6 col-md-12">
+                    @{
+                        ViewData["SectionTitle"] = "Các sản phẩm mới nhất";
+                    }
+                    @await Html.PartialAsync("_ProductSlider", ViewBag.Latest as List<EcommerceWeb.Models.Product>)
+                </div>
+
+                <!-- Cheapest Products -->
+                <div class="col-lg-6 col-md-12">
+                    @{
+                        ViewData["SectionTitle"] = "Sản phẩm rẻ nhất từng loại";
+                    }
+                    @await Html.PartialAsync("_ProductSlider", ViewBag.Cheapest as List<EcommerceWeb.Models.Product>)
                 </div>
             </div>
         </div>
     </section>
-    <!-- Latest Product Section End -->
+
+
+
     <!-- Blog Section Begin -->
     <section class="from-blog spad">
         <div class="container">

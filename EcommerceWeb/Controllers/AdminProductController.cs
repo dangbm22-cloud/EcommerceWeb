@@ -193,9 +193,8 @@ namespace EcommerceWeb.Controllers
 
                     product.ImageUrl = $"/img/product/{categoryFolderName}/{safeFileName}";
                 }
-                else
+                else // Nếu không upload ảnh mới, giữ nguyên ảnh cũ
                 {
-                    // Nếu không upload ảnh mới thì giữ nguyên ảnh cũ
                     var oldProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
                     product.ImageUrl = oldProduct?.ImageUrl;
                 }
@@ -249,7 +248,7 @@ namespace EcommerceWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // 📌 Hàm tạo slug an toàn cho tên file/thư mục
+        // 📌 Hàm tạo slug an toàn cho tên file ảnh
         private static string Slugify(string input)
         {
             input = input.Trim().ToLowerInvariant();
