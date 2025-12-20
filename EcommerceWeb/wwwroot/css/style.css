@@ -3430,10 +3430,13 @@ ol {
 	}
 
 
-.sidebar select {
-	position: relative;
-	z-index: 10; /* cao hơn slider */
+.sidebar select,
+.form-control {
+	width: 100% !important;
+	display: block;
 }
+
+
 
 .price-range-wrap {
 	margin-top: 20px;
