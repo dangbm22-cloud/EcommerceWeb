@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "_AdminLayout"; // dùng layout admin riêng, nếu chưa có thì tạm thời để "_Layout"
+    Layout = "_AdminLayout";
     ViewData["Title"] = "Admin Dashboard";
 }
 
@@ -34,6 +34,15 @@
                     <h5 class="card-title">Doanh thu</h5>
                     <p class="card-text">Xem báo cáo doanh thu và thống kê bán hàng.</p>
                     <a asp-controller="Admin" asp-action="Revenue" class="btn btn-primary">Đi tới</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Thêm danh mục</h5>
+                    <p class="card-text">Xem danh mục bán hàng.</p>
+                    <a asp-controller="Categories" asp-action="Index" class="btn btn-primary">Đi tới</a>
                 </div>
             </div>
         </div>

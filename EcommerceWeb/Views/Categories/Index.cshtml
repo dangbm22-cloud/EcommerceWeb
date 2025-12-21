@@ -1,0 +1,36 @@
+﻿@model IEnumerable<EcommerceWeb.Models.Category>
+
+@{
+    Layout = "_AdminLayout"; // Layout của Admin
+    ViewData["Title"] = "Quản lý danh mục";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Danh sách sản danh mục</h2>
+    <a asp-action="Create" class="btn btn-success mb-3">+ Thêm danh mục mới</a>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Tên Danh mục</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+
+                    <td>@item.Name</td>
+
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Sửa</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Xóa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

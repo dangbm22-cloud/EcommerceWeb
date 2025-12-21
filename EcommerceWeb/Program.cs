@@ -53,6 +53,7 @@ using (var scope = app.Services.CreateScope())
     if (!await roleManager.RoleExistsAsync("User"))
         await roleManager.CreateAsync(new IdentityRole("User"));
 
+    // Tạo tài khoản Admin mặc định
     var adminEmail = "admin@ecommerce.com";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)

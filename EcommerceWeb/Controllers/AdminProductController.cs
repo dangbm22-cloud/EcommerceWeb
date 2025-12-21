@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceWeb.Controllers
 {
-    [Authorize(Roles = "Admin")] // Chỉ cho phép Admin truy cập
+    [Authorize(Roles = "Admin")] // Chỉ cho phép tài khoản role Admin truy cập 
     public class AdminProductController : Controller
     {
         private readonly AppDbContext _context;
@@ -20,14 +20,14 @@ namespace EcommerceWeb.Controllers
             _env = env;
         }
 
-        // 📌 Danh sách sản phẩm
+        // Danh sách sản phẩm
         public IActionResult Index()
         {
             var products = _context.Products.Include(p => p.Category).ToList();
             return View(products);
         }
 
-        // 📌 Chi tiết sản phẩm
+        // Chi tiết sản phẩm
         public IActionResult Details(int id)
         {
             var product = _context.Products
@@ -39,7 +39,7 @@ namespace EcommerceWeb.Controllers
             return View(product);
         }
 
-        // 📌 Tạo sản phẩm mới (GET)
+        // Tạo sản phẩm mới (GET)
         [HttpGet]
         public IActionResult Create()
         {
@@ -47,7 +47,7 @@ namespace EcommerceWeb.Controllers
             return View();
         }
 
-        // 📌 Tạo sản phẩm mới (POST + upload ảnh)
+        // Tạo sản phẩm mới (POST + upload ảnh)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Product product, IFormFile? ImageFile)
@@ -66,7 +66,7 @@ namespace EcommerceWeb.Controllers
                 ModelState.AddModelError("ImageUrl", "Bạn phải upload ảnh hoặc nhập URL.");
             }
 
-            // Nếu có upload ảnh thì kiểm tra dung lượng và định dạng
+            // Nếu có upload ảnh thì kiểm tra dung lượng và định dạng, chấp nhận jpg, png, webp;
             if (ImageFile != null && ImageFile.Length > 0)
             {
                 const long maxBytes = 5 * 1024 * 1024;
@@ -112,9 +112,7 @@ namespace EcommerceWeb.Controllers
 
                 product.ImageUrl = $"/img/product/{categoryFolderName}/{safeFileName}";
             }
-            // Nếu không upload ảnh nhưng có nhập URL thì xài ImageUrl
-            // (không cần xử lý thêm)
-
+            // Nếu đã để ảnh trong project VS thì nhập URL
             _context.Products.Add(product);
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
@@ -213,7 +211,7 @@ namespace EcommerceWeb.Controllers
         }
 
 
-        // 📌 Xóa sản phẩm
+        // Xóa sản phẩm
         [HttpGet]
         public IActionResult Delete(int id)
         {
@@ -248,7 +246,7 @@ namespace EcommerceWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // 📌 Hàm tạo slug an toàn cho tên file ảnh
+        // Hàm tạo tên hợp lệ cho file ảnh để đưa luôn ảnh vào bài
         private static string Slugify(string input)
         {
             input = input.Trim().ToLowerInvariant();

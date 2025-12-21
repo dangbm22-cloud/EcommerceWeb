@@ -17,6 +17,10 @@ namespace EcommerceWeb.Controllers
 
         public IActionResult Index()
         {
+
+            var category = _context.Categories
+                .ToList();
+
             var featuredProducts = _context.Products
                 .Include(p => p.Category)
                 .Take(8)
@@ -37,7 +41,7 @@ namespace EcommerceWeb.Controllers
                 .Select(g => g.OrderBy(p => p.Price).First())
                 .ToList();
 
-
+            ViewBag.Categories = category;
             ViewBag.Featured = featuredProducts;
             ViewBag.Latest = latestProducts;
             ViewBag.Cheapest = cheapestProducts;

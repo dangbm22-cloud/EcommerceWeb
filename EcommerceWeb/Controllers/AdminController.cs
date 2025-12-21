@@ -13,8 +13,15 @@ namespace EcommerceWeb.Controllers
             return View();
         }
 
+
         // Trang thống kê doanh thu
         public IActionResult Revenue()
+        {
+            return View();
+        }
+
+        // Trang quản lý Danh mục Sản phẩm
+        public IActionResult Categories()
         {
             return View();
         }

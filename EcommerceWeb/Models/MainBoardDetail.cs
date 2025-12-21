@@ -6,7 +6,6 @@
 
         public int ProductId { get; set; }
         public Product Product { get; set; }
-
         public string Socket { get; set; }
         public string Chipset { get; set; }
         public string FormFactor { get; set; }
