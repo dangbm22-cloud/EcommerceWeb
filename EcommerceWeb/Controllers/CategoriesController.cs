@@ -22,17 +22,6 @@ namespace EcommerceWeb.Controllers
             return View(products);
         }
 
-        public IActionResult Details(int id)
-        {
-            var product = _context.Categories
-
-                .FirstOrDefault(p => p.Id == id);
-
-            if (product == null) return NotFound();
-
-            return View(product);
-        }
-
         [HttpGet]
         public IActionResult Create()
         {
@@ -49,5 +38,44 @@ namespace EcommerceWeb.Controllers
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Delete(int id)
+        {
+            var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            // Lấy danh mục kèm sản phẩm liên quan
+            var category = _context.Categories
+                .Include(c => c.Products)
+                .FirstOrDefault(c => c.Id == id);
+
+            if (category != null)
+            {
+                // Nếu có sản phẩm thì xóa hết trước
+                if (category.Products != null && category.Products.Any())
+                {
+                    _context.Products.RemoveRange(category.Products);
+                }
+
+                // Xóa danh mục
+                _context.Categories.Remove(category);
+
+                // Lưu thay đổi
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }

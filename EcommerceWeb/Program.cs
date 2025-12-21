@@ -25,6 +25,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
+builder.Services.AddSession();
+
+
+
 
 var app = builder.Build();
 
@@ -41,6 +45,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 // Seed Roles & Admin mặc định duy nhất
 using (var scope = app.Services.CreateScope())

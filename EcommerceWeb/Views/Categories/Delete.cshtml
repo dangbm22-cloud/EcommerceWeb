@@ -1,0 +1,25 @@
+﻿@model EcommerceWeb.Models.Category
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Xóa danh mục";
+}
+
+<div class="container mt-4">
+    <h2>Xóa danh mục</h2>
+    <h5>Bạn có chắc chắn muốn xóa danh mục sau?</h5>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">ID</dt>
+        <dd class="col-sm-10">@Model.Id</dd>
+
+        <dt class="col-sm-2">Tên danh mục</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>
