@@ -57,5 +57,24 @@ namespace EcommerceWeb.Controllers
 
             return RedirectToAction("Cart");
         }
+
+        // cập nhật số lượng bằng AJAX
+        [HttpPost]
+        public IActionResult UpdateQuantityAjax(int id, int quantity)
+        {
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var item = cart.FirstOrDefault(c => c.Product.Id == id);
+
+            if (item != null && quantity > 0)
+            {
+                item.Quantity = quantity;
+                HttpContext.Session.SetObjectAsJson("Cart", cart);
+            }
+
+            var itemTotal = item?.Product.Price * item?.Quantity ?? 0;
+            var cartTotal = cart.Sum(i => i.Product.Price * i.Quantity);
+
+            return Json(new { itemTotal, cartTotal });
+        }
     }
 }

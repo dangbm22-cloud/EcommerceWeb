@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -19,4 +19,105 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+/* Cart table */
+.shoping__cart__table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.cart__item__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .cart__item__content img {
+        width: 80px;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .cart__item__content span {
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+/* Quantity box */
+.pro-qty {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 120px;
+}
+
+    .pro-qty .qtybtn {
+        width: 30px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        background-color: #f5f5f5;
+        cursor: pointer;
+        user-select: none;
+        font-weight: bold;
+    }
+
+    .pro-qty input {
+        width: 60px;
+        height: 40px;
+        text-align: center;
+        border: none;
+        outline: none;
+        font-size: 16px;
+    }
+
+/* Responsive cho mobile & tablet */
+@media (max-width: 992px) {
+    /* Cho phép bảng cuộn ngang */
+    .shoping__cart__table table {
+        min-width: 600px;
+        width: 100%;
+    }
+
+    /* Ảnh và chữ nhỏ lại */
+    .cart__item__content img {
+        width: 60px;
+    }
+
+    .cart__item__content span {
+        font-size: 14px;
+    }
+
+    /* Nút checkout full width */
+    .shoping__checkout .primary-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Quantity box thu gọn */
+    .pro-qty {
+        max-width: 100px;
+    }
+
+        .pro-qty .qtybtn {
+            width: 28px;
+            height: 36px;
+            line-height: 36px;
+            font-size: 14px;
+        }
+
+        .pro-qty input {
+            width: 44px;
+            height: 36px;
+            font-size: 14px;
+        }
+
+    /* Font chữ trong bảng nhỏ hơn */
+    .shoping__cart__table td, .shoping__cart__table th {
+        white-space: nowrap;
+    }
 }

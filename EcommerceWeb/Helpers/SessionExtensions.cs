@@ -5,7 +5,7 @@ namespace EcommerceWeb.Helpers
 {
     public static class SessionExtensions
     {
-        // Lưu object vào Session dưới dạng JSON
+        // Lưu object vào Session dưới dạng JSOM
         public static void SetObjectAsJson(this ISession session, string key, object value)
         {
             session.SetString(key, JsonConvert.SerializeObject(value));

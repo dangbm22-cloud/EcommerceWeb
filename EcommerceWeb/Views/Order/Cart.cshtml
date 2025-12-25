@@ -22,8 +22,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <div class="shoping__cart__table">
-                    <table>
+                <div class="shoping__cart__table table-responsive">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th class="shoping__product">Products</th>
@@ -38,26 +38,30 @@
                             {
                                 foreach (var item in Model)
                                 {
-                                    <tr>
+                                    <tr data-product-id="@item.Product.Id">
                                         <td class="shoping__cart__item">
-                                            <img src="@item.Product.ImageUrl" alt="@item.Product.Name" style="width:80px;" />
-                                            <h5>@item.Product.Name</h5>
+                                            <div class="cart__item__content">
+                                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name" />
+                                                <span>@item.Product.Name</span>
+                                            </div>
                                         </td>
                                         <td class="shoping__cart__price">
-                                            @string.Format("{0:N0} VND", item.Product.Price)
+                                            @string.Format("{0:N0}", item.Product.Price) VND
                                         </td>
                                         <td class="shoping__cart__quantity">
                                             <div class="quantity">
                                                 <div class="pro-qty">
-                                                    <input type="text" value="@item.Quantity">
+                                                    <span class="dec qtybtn">-</span>
+                                                    <input type="number" value="@item.Quantity" min="1" />
+                                                    <span class="inc qtybtn">+</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="shoping__cart__total">
-                                            @string.Format("{0:N0} VND", item.Product.Price * item.Quantity)
+                                            @string.Format("{0:N0}", item.Product.Price * item.Quantity) VND
                                         </td>
                                         <td class="shoping__cart__item__close">
-                                            <a asp-controller="Cart" asp-action="Remove" asp-route-id="@item.Product.Id">
+                                            <a asp-controller="Order" asp-action="Remove" asp-route-id="@item.Product.Id">
                                                 <span class="icon_close"></span>
                                             </a>
                                         </td>
@@ -76,37 +80,17 @@
             </div>
         </div>
 
-        <!-- Cart Buttons -->
+        <!-- Cart Total -->
         <div class="row">
-            <div class="col-lg-12">
-                <div class="shoping__cart__btns">
-                    <a asp-controller="Product" asp-action="Index" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
-                </div>
-            </div>
-
-            <!-- Discount Code -->
-            <div class="col-lg-6">
-                <div class="shoping__continue">
-                    <div class="shoping__discount">
-                        <h5>Discount Codes</h5>
-                        <form action="#">
-                            <input type="text" placeholder="Enter your coupon code">
-                            <button type="submit" class="site-btn">APPLY COUPON</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cart Total -->
-            <div class="col-lg-6">
+            <div class="col-lg-6 offset-lg-6">
                 <div class="shoping__checkout">
                     <h5>Cart Total</h5>
                     @{
                         var subtotal = Model?.Sum(i => i.Product.Price * i.Quantity) ?? 0;
                     }
                     <ul>
-                        <li>Subtotal <span>@string.Format("{0:N0} VND", subtotal)</span></li>
-                        <li>Total <span>@string.Format("{0:N0} VND", subtotal)</span></li>
+                        <li>Subtotal <span>@string.Format("{0:N0}", subtotal) VND</span></li>
+                        <li>Total <span>@string.Format("{0:N0}", subtotal) VND</span></li>
                     </ul>
                     <a asp-controller="Order" asp-action="Checkout" class="primary-btn">PROCEED TO CHECKOUT</a>
                 </div>
@@ -115,3 +99,61 @@
     </div>
 </section>
 <!-- Shoping Cart Section End -->
+<!-- Ẩn mũi tên lên/xuống trong input number -->
+<style>
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Khi nhập trực tiếp số lượng
+            $('.pro-qty input').on('change', function () {
+                updateQuantity($(this));
+            });
+
+            // Khi click nút + -
+            $('.qtybtn').on('click', function () {
+                const $button = $(this);
+                const $input = $button.siblings('input');
+                let oldValue = parseInt($input.val());
+
+                if ($button.hasClass('inc')) {
+                    $input.val(oldValue + 1);
+                } else {
+                    if (oldValue > 1) {
+                        $input.val(oldValue - 1);
+                    }
+                }
+
+                updateQuantity($input); // Gọi trực tiếp, không trigger change
+            });
+
+            // Hàm AJAX cập nhật số lượng
+            function updateQuantity(input) {
+                const quantity = parseInt(input.val());
+                const row = input.closest('tr');
+                const id = row.data('product-id');
+
+                $.ajax({
+                    url: '/Order/UpdateQuantityAjax',
+                    type: 'POST',
+                    data: { id: id, quantity: quantity },
+                    success: function (res) {
+                        row.find('.shoping__cart__total').text(res.itemTotal.toLocaleString() + ' VND');
+                        $('.shoping__checkout ul li:first span').text(res.cartTotal.toLocaleString() + ' VND');
+                        $('.shoping__checkout ul li:last span').text(res.cartTotal.toLocaleString() + ' VND');
+                    }
+                });
+            }
+        });
+    </script>
+}
