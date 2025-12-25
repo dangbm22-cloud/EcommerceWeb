@@ -731,29 +731,41 @@ ol {
 -----------------------*/
 
 .categories__item {
-	height: 270px;
+	height: 200px;
+	background-size: cover;
+	background-position: center;
 	position: relative;
-}
-
-.categories__item h5 {
-	position: absolute;
-	left: 0;
-	width: 100%;
-	padding: 0 20px;
-	bottom: 20px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	padding: 15px;
+	border-radius: 8px;
+	overflow: hidden;
+	color: white;
 	text-align: center;
 }
 
-.categories__item h5 a {
-	font-size: 18px;
-	color: #1c1c1c;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 2px;
-	padding: 12px 0 10px;
-	background: #ffffff;
-	display: block;
-}
+	.categories__item::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: rgba(0,0,0,0.3); /* overlay mờ để chữ dễ thấy */
+		z-index: 1;
+	}
+
+	.categories__item h5 {
+		position: relative;
+		z-index: 2;
+		font-size: 18px;
+		font-weight: bold;
+	}
+
+		.categories__item h5 a {
+			color: white;
+			text-decoration: none;
+			text-shadow: 0 0 5px rgba(0,0,0,0.6);
+		}
+
 
 .categories__slider .col-lg-3 {
 	max-width: 100%;

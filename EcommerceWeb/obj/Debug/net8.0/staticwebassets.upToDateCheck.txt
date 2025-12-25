@@ -4,6 +4,7 @@ wwwroot\css\font-awesome.min.css
 wwwroot\css\jquery-ui.min.css
 wwwroot\css\nice-select.css
 wwwroot\css\owl.carousel.min.css
+wwwroot\css\site.css
 wwwroot\css\slicknav.min.css
 wwwroot\css\style.css
 wwwroot\favicon.ico
@@ -166,4 +167,3 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\site.css

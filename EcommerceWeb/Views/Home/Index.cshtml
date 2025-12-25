@@ -114,48 +114,58 @@
             </div>
         </div>
     </section>
-    <!-- Hero Section End -->
-    <!-- Phần Category dưới cái ảnh lớn -->
+<!-- Hero Section End -->
+
+<!-- Phần Category dưới cái ảnh lớn -->
     <section class="categories">
         <div class="container">
             <div class="row">
                 <div class="categories__slider owl-carousel">
-                    <div class="col-lg-3">
-                        <div class="categories__item set-bg" data-setbg="img/categories/cat-1.jpg">
-                            <h5><a href="#">Mainboard</a></h5>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="categories__item set-bg" data-setbg="img/categories/cat-2.jpg">
-                            <h5><a href="#">CPU</a></h5>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="categories__item set-bg" data-setbg="img/categories/cat-3.jpg">
-                            <h5><a href="#">VGA (Card đồ họa)</a></h5>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="categories__item set-bg" data-setbg="img/categories/cat-4.jpg">
-                            <h5><a href="#">RAM</a></h5>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="categories__item set-bg" data-setbg="img/categories/cat-5.jpg">
-                            <h5><a href="#">Nguồn (PSU)</a></h5>
-                        </div>
-                    </div>
-                <div class="col-lg-3">
-                    <div class="categories__item set-bg" data-setbg="img/categories/cat-3.jpg">
-                        <h5><a href="#">PC Lắp sẵn</a></h5>
-                    </div>
-                </div>
+
+                    <a href="@Url.Action("Index", "Product", new { category = "Mainboard" })"
+                       class="categories__item"
+                       style="background-image:url('@Url.Content("~/img/product/Mainboard/MainboardB760MAYWASUS.jpg")')">
+                        <h5>Mainboard</h5>
+                    </a>
+
+                    <a href="@Url.Action("Index", "Product", new { category = "CPU" })"
+                       class="categories__item"
+                       style="background-image:url('@Url.Content("~/img/product/CPU/CPUi79700K.jpg")')">
+                        <h5>CPU</h5>
+                    </a>
+
+                    <a href="@Url.Action("Index", "Product", new { category = "VGA" })"
+                       class="categories__item"
+                       style="background-image:url('@Url.Content("~/img/product/VGA/VGARTX4060Zotac.jpg")')">
+                        <h5>VGA (Card đồ họa)</h5>
+                    </a>
+
+                    <a href="@Url.Action("Index", "Product", new { category = "RAM" })"
+                       class="categories__item"
+                       style="background-image:url('@Url.Content("~/img/product/RAM/RAM16GBD4Corsair.jpg")')">
+                        <h5>RAM</h5>
+                    </a>
+
+                    <a href="@Url.Action("Index", "Product", new { category = "PSU" })"
+                       class="categories__item"
+                       style="background-image:url('@Url.Content("~/img/product/PSU/PSU750WAIGO.jpg")')">
+                        <h5>Nguồn (PSU)</h5>
+                    </a>
+
+                    <a href="@Url.Action("Index", "Product", new { category = "PC" })"
+                       class="categories__item"
+                       style="background-image:url('@Url.Content("~/img/product/BuildPC/BuildPCi714700F.jpg")')">
+                        <h5>PC Lắp sẵn</h5>
+                    </a>
+
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Featured Section Begin -->
+
+
+<!-- Featured Section Begin -->
     <section class="featured spad">
         <div class="container">
             <div class="row">
