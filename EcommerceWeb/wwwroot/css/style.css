@@ -461,60 +461,61 @@ ol {
 }
 
 .header__cart {
-	text-align: right;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
 	padding: 24px 0;
 }
 
-.header__cart ul {
-	display: inline-block;
-	margin-right: 25px;
-}
+	.header__cart ul {
+		display: flex;
+		align-items: center; /* giúp các li nằm đúng trục */
+		gap: 20px; /* khoảng cách đều nhau */
+		margin: 0;
+		padding: 0;
+	}
 
-.header__cart ul li {
+
+.header__cart__item {
 	list-style: none;
-	display: inline-block;
-	margin-right: 15px;
 }
 
-.header__cart ul li:last-child {
-	margin-right: 0;
-}
-
-.header__cart ul li a {
+.header__cart__link {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	position: relative;
+	width: 32px;
+	height: 32px;
+	text-decoration: none;
 }
 
-.header__cart ul li a i {
-	font-size: 18px;
-	color: #1c1c1c;
-}
+	.header__cart__link i {
+		font-size: 22px;
+		color: #1c1c1c;
+		line-height: 1;
+	}
 
-.header__cart ul li a span {
-	height: 13px;
-	width: 13px;
-	background: red;
-	font-size: 10px;
-	color: #ffffff;
-	line-height: 13px;
-	text-align: center;
-	font-weight: 700;
-	display: inline-block;
-	border-radius: 50%;
+
+
+.cart-count {
+	outline: 1px solid red;
 	position: absolute;
-	top: 0;
-	right: -12px;
-}
-
-.header__cart .header__cart__price {
-	font-size: 14px;
-	color: #6f6f6f;
-	display: inline-block;
-}
-
-.header__cart .header__cart__price span {
-	color: #252525;
+	top: -6px;
+	right: -10px;
+	background-color: #7fad39;
+	color: #fff;
+	font-size: 11px;
 	font-weight: 700;
+	border-radius: 50%;
+	width: 18px;
+	height: 18px;
+	text-align: center;
+	line-height: 18px;
+	z-index: 10;
 }
+
+
 
 .humberger__menu__wrapper {
 	display: none;
