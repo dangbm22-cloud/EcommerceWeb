@@ -1,10 +1,12 @@
 ﻿using EcommerceWeb.Data;
 using EcommerceWeb.Helpers;
 using EcommerceWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceWeb.Controllers
 {
+    [Authorize] // bắt buộc đăng nhập cho toàn bộ controller
     public class OrderController : Controller
     {
         private readonly AppDbContext _context;
