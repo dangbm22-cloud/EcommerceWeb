@@ -15,7 +15,21 @@ namespace EcommerceWeb.Helpers
         public static T GetObjectFromJson<T>(this ISession session, string key)
         {
             var value = session.GetString(key);
-            return value == null ? default(T) : JsonConvert.DeserializeObject<T>(value);
+
+            if (string.IsNullOrEmpty(value))
+                return default(T);
+
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(value);
+            }
+            catch (JsonException)
+            {
+                // Nếu dữ liệu lỗi, xóa session để tránh crash
+                session.Remove(key);
+                return default(T);
+            }
         }
+
     }
 }

@@ -16,15 +16,9 @@
     <link rel="stylesheet" href="~/css/style.css" />
 </head>
 
-@using EcommerceWeb.Helpers
 
-@{
-    var cart = Context.Session.GetObjectFromJson<List<int>>("Cart") ?? new List<int>();
-    var cartCount = cart.Count;
 
-    var wishlist = Context.Session.GetObjectFromJson<List<int>>("Wishlist") ?? new List<int>();
-    var wishlistCount = wishlist.Count;
-}
+
 <body>
     <!-- Humberger Begin -->
     <div class="humberger__menu__overlay"></div>
@@ -76,7 +70,17 @@
         </div>
     </div>
     <!-- Humberger End -->
+
     <!-- Header Section Begin -->
+    @using EcommerceWeb.Helpers
+    @using EcommerceWeb.Models
+    @{
+        var cart = Context.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+        var cartCount = cart.Count; // số dòng sản phẩm trong giỏ
+
+        var wishlist = Context.Session.GetObjectFromJson<List<int>>("Wishlist") ?? new List<int>();
+        var wishlistCount = wishlist.Count; // số sản phẩm trong wishlist
+    }
     <header class="header">
         <div class="header__top">
             <div class="container">
@@ -114,6 +118,7 @@
                 </div>
             </div>
         </div>
+
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
@@ -130,14 +135,19 @@
                         <li><a asp-controller="Order" asp-action="Checkout">Checkout</a></li>
                     </ul>
                 </nav>
+
+                <!-- Cart + Wishlist -->
                 <div class="header__cart d-flex justify-content-end align-items-center gap-4">
                     <ul class="d-flex gap-4 mb-0">
+                        <!-- Wishlist -->
                         <li class="header__cart__item">
                             <a asp-controller="Wishlist" asp-action="Index" class="header__cart__link">
                                 <i class="fa fa-heart"></i>
                                 <span class="cart-count">@wishlistCount</span>
                             </a>
                         </li>
+
+                        <!-- Cart -->
                         <li class="header__cart__item">
                             <a asp-controller="Order" asp-action="Cart" class="header__cart__link">
                                 <i class="fa fa-shopping-bag"></i>
@@ -146,7 +156,10 @@
                         </li>
                     </ul>
                 </div>
+
+
             </div>
+
             <div class="humberger__open">
                 <i class="fa fa-bars"></i>
             </div>

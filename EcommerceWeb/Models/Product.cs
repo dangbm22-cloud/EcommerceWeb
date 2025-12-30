@@ -11,5 +11,8 @@
         public int CategoryId { get; set; }
 
         public Category? Category { get; set; }
+
+        //Thông số của mấy linh kiện
+        //public string Specifications { get; set; } = string.Empty;
     }
 }
