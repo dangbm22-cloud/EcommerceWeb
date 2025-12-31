@@ -1,10 +1,12 @@
-﻿using System.IO;
-using System.Text.RegularExpressions;
-using EcommerceWeb.Data;
+﻿using EcommerceWeb.Data;
 using EcommerceWeb.Models;
+using EcommerceWeb.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace EcommerceWeb.Controllers
 {
@@ -44,75 +46,36 @@ namespace EcommerceWeb.Controllers
         public IActionResult Create()
         {
             ViewBag.Categories = _context.Categories.ToList();
-            return View();
+
+            var vm = new ProductViewModel
+            {
+                Specifications = new List<SpecificationItem> { new() }
+            };
+
+            return View(vm);
         }
 
         // Tạo sản phẩm mới (POST + upload ảnh)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Product product, IFormFile? ImageFile)
+        public IActionResult Create(ProductViewModel vm, IFormFile? ImageFile)
         {
             ViewBag.Categories = _context.Categories.ToList();
 
-            var category = _context.Categories.Find(product.CategoryId);
-            if (category == null)
+            if (!ModelState.IsValid) return View(vm);
+
+            var product = new Product
             {
-                ModelState.AddModelError(nameof(product.CategoryId), "Danh mục không hợp lệ.");
-            }
+                Name = vm.Name,
+                Price = vm.Price,
+                Description = vm.Description,
+                Stock = vm.Stock,
+                CategoryId = vm.CategoryId,
+                ImageUrl = vm.ImageUrl,
+                Specifications = JsonConvert.SerializeObject(vm.Specifications)
+            };
 
-            // Nếu cả hai đều trống thì báo lỗi
-            if ((ImageFile == null || ImageFile.Length == 0) && string.IsNullOrEmpty(product.ImageUrl))
-            {
-                ModelState.AddModelError("ImageUrl", "Bạn phải upload ảnh hoặc nhập URL.");
-            }
-
-            // Nếu có upload ảnh thì kiểm tra dung lượng và định dạng, chấp nhận jpg, png, webp;
-            if (ImageFile != null && ImageFile.Length > 0)
-            {
-                const long maxBytes = 5 * 1024 * 1024;
-                if (ImageFile.Length > maxBytes)
-                {
-                    ModelState.AddModelError("ImageFile", "Ảnh quá lớn, tối đa 5MB.");
-                }
-
-                var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
-                if (!allowed.Contains(ImageFile.ContentType))
-                {
-                    ModelState.AddModelError("ImageFile", "Định dạng ảnh không hỗ trợ (chỉ JPG, PNG, WEBP).");
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Categories = _context.Categories.ToList(); // Bắt buộc phải gán lại
-                return View(product);
-            }
-
-            // Nếu có upload ảnh thì lưu file và gán ImageUrl
-            if (ImageFile != null && ImageFile.Length > 0)
-            {
-                var webRoot = _env.WebRootPath;
-                var categoryFolderName = Slugify(category!.Name);
-                var folderPath = Path.Combine(webRoot, "img", "product", categoryFolderName);
-
-                if (!Directory.Exists(folderPath))
-                {
-                    Directory.CreateDirectory(folderPath);
-                }
-
-                var extension = Path.GetExtension(ImageFile.FileName);
-                var baseName = Slugify(product.Name);
-                var safeFileName = $"{baseName}-{Guid.NewGuid()}{extension}";
-                var filePath = Path.Combine(folderPath, safeFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    ImageFile.CopyTo(stream);
-                }
-
-                product.ImageUrl = $"/img/product/{categoryFolderName}/{safeFileName}";
-            }
-            // Nếu đã để ảnh trong project VS thì nhập URL
+            // Xử lý ảnh
             _context.Products.Add(product);
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
