@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace EcommerceWeb.Controllers
@@ -29,7 +28,7 @@ namespace EcommerceWeb.Controllers
             return View(products);
         }
 
-        // Chi tiết sản phẩm
+        // Chi tiết sản phẩm (hiển thị Specifications)
         public IActionResult Details(int id)
         {
             var product = _context.Products
@@ -38,6 +37,11 @@ namespace EcommerceWeb.Controllers
 
             if (product == null) return NotFound();
 
+            var specs = string.IsNullOrEmpty(product.Specifications)
+                ? new List<SpecificationItem>()
+                : JsonConvert.DeserializeObject<List<SpecificationItem>>(product.Specifications);
+
+            ViewBag.Specifications = specs;
             return View(product);
         }
 
@@ -55,7 +59,7 @@ namespace EcommerceWeb.Controllers
             return View(vm);
         }
 
-        // Tạo sản phẩm mới (POST + upload ảnh)
+        // Tạo sản phẩm mới (POST + upload ảnh + Specifications)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(ProductViewModel vm, IFormFile? ImageFile)
@@ -75,13 +79,51 @@ namespace EcommerceWeb.Controllers
                 Specifications = JsonConvert.SerializeObject(vm.Specifications)
             };
 
-            // Xử lý ảnh
+            // Xử lý upload ảnh
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                const long maxBytes = 5 * 1024 * 1024;
+                if (ImageFile.Length > maxBytes)
+                {
+                    ModelState.AddModelError("ImageFile", "Ảnh quá lớn, tối đa 5MB.");
+                    return View(vm);
+                }
+
+                var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+                if (!allowed.Contains(ImageFile.ContentType))
+                {
+                    ModelState.AddModelError("ImageFile", "Định dạng ảnh không hỗ trợ (chỉ JPG, PNG, WEBP).");
+                    return View(vm);
+                }
+
+                var webRoot = _env.WebRootPath;
+                var categoryFolderName = Slugify(_context.Categories.Find(vm.CategoryId)!.Name);
+                var folderPath = Path.Combine(webRoot, "img", "product", categoryFolderName);
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                var extension = Path.GetExtension(ImageFile.FileName);
+                var baseName = Slugify(vm.Name);
+                var safeFileName = $"{baseName}-{Guid.NewGuid()}{extension}";
+                var filePath = Path.Combine(folderPath, safeFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    ImageFile.CopyTo(stream);
+                }
+
+                product.ImageUrl = $"/img/product/{categoryFolderName}/{safeFileName}";
+            }
+
             _context.Products.Add(product);
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
 
-        // Phần sửa sản phẩm (GET)
+        // Sửa sản phẩm (GET)
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -90,89 +132,99 @@ namespace EcommerceWeb.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product == null) return NotFound();
 
+            var vm = new ProductViewModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                ImageUrl = product.ImageUrl,
+                Stock = product.Stock,
+                CategoryId = product.CategoryId,
+                Specifications = string.IsNullOrEmpty(product.Specifications)
+                    ? new List<SpecificationItem>()
+                    : JsonConvert.DeserializeObject<List<SpecificationItem>>(product.Specifications)
+            };
+
             ViewBag.Categories = _context.Categories.ToList();
-            return View(product);
+            return View(vm);
         }
 
+        // Sửa sản phẩm (POST + Specifications + upload ảnh)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Product product, IFormFile? ImageFile)
+        public async Task<IActionResult> Edit(int id, ProductViewModel vm, IFormFile? ImageFile)
         {
-            if (id != product.Id) return NotFound();
-
-            var category = await _context.Categories.FindAsync(product.CategoryId);
-            if (category == null)
-            {
-                ModelState.AddModelError(nameof(product.CategoryId), "Danh mục không hợp lệ.");
-            }
+            if (id != vm.Id) return NotFound();
 
             if (!ModelState.IsValid)
             {
                 ViewBag.Categories = _context.Categories.ToList();
-                return View(product);
+                return View(vm);
             }
 
-            try
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            product.Name = vm.Name;
+            product.Price = vm.Price;
+            product.Description = vm.Description;
+            product.Stock = vm.Stock;
+            product.CategoryId = vm.CategoryId;
+            product.Specifications = JsonConvert.SerializeObject(vm.Specifications);
+
+            // Nếu có upload ảnh mới
+            if (ImageFile != null && ImageFile.Length > 0)
             {
-                // Nếu có upload ảnh mới
-                if (ImageFile != null && ImageFile.Length > 0)
+                const long maxBytes = 5 * 1024 * 1024;
+                if (ImageFile.Length > maxBytes)
                 {
-                    const long maxBytes = 5 * 1024 * 1024;
-                    if (ImageFile.Length > maxBytes)
-                    {
-                        ModelState.AddModelError("ImageFile", "Ảnh quá lớn, tối đa 5MB.");
-                        ViewBag.Categories = _context.Categories.ToList();
-                        return View(product);
-                    }
-
-                    var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
-                    if (!allowed.Contains(ImageFile.ContentType))
-                    {
-                        ModelState.AddModelError("ImageFile", "Định dạng ảnh không hỗ trợ (chỉ JPG, PNG, WEBP).");
-                        ViewBag.Categories = _context.Categories.ToList();
-                        return View(product);
-                    }
-
-                    var webRoot = _env.WebRootPath;
-                    var categoryFolderName = Slugify(category!.Name);
-                    var folderPath = Path.Combine(webRoot, "img", "product", categoryFolderName);
-
-                    if (!Directory.Exists(folderPath))
-                    {
-                        Directory.CreateDirectory(folderPath);
-                    }
-
-                    var extension = Path.GetExtension(ImageFile.FileName);
-                    var baseName = Slugify(product.Name);
-                    var safeFileName = $"{baseName}-{Guid.NewGuid()}{extension}";
-                    var filePath = Path.Combine(folderPath, safeFileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await ImageFile.CopyToAsync(stream);
-                    }
-
-                    product.ImageUrl = $"/img/product/{categoryFolderName}/{safeFileName}";
-                }
-                else // Nếu không upload ảnh mới, giữ nguyên ảnh cũ
-                {
-                    var oldProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-                    product.ImageUrl = oldProduct?.ImageUrl;
+                    ModelState.AddModelError("ImageFile", "Ảnh quá lớn, tối đa 5MB.");
+                    return View(vm);
                 }
 
-                _context.Update(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+                if (!allowed.Contains(ImageFile.ContentType))
+                {
+                    ModelState.AddModelError("ImageFile", "Định dạng ảnh không hỗ trợ (chỉ JPG, PNG, WEBP).");
+                    return View(vm);
+                }
+
+                var webRoot = _env.WebRootPath;
+                var categoryFolderName = Slugify(_context.Categories.Find(vm.CategoryId)!.Name);
+                var folderPath = Path.Combine(webRoot, "img", "product", categoryFolderName);
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                var extension = Path.GetExtension(ImageFile.FileName);
+                var baseName = Slugify(vm.Name);
+                var safeFileName = $"{baseName}-{Guid.NewGuid()}{extension}";
+                var filePath = Path.Combine(folderPath, safeFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await ImageFile.CopyToAsync(stream);
+                }
+
+                product.ImageUrl = $"/img/product/{categoryFolderName}/{safeFileName}";
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!_context.Products.Any(e => e.Id == product.Id))
-                    return NotFound();
-                else
-                    throw;
+                // Nếu không upload ảnh mới
+                if (!string.IsNullOrEmpty(vm.ImageUrl))
+                {
+                    product.ImageUrl = vm.ImageUrl; // nếu Admin nhập URL mới
+                }
+                // nếu vm.ImageUrl rỗng thì giữ nguyên ảnh cũ
             }
+
+            _context.Update(product);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
-
 
         // Xóa sản phẩm
         [HttpGet]
@@ -209,7 +261,7 @@ namespace EcommerceWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Hàm tạo tên hợp lệ cho file ảnh để đưa luôn ảnh vào bài
+        // Hàm tạo tên hợp lệ cho file ảnh
         private static string Slugify(string input)
         {
             input = input.Trim().ToLowerInvariant();

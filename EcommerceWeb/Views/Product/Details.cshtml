@@ -1,11 +1,14 @@
 ﻿@model EcommerceWeb.Models.Product
+@{
+    var specs = ViewBag.Specifications as List<EcommerceWeb.ViewModels.SpecificationItem>;
+}
 
 <section class="product-details spad">
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <!-- Ảnh sản phẩm -->
-            <div class="col-lg-6 mb-4">
-                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid" />
+            <div class="col-lg-6 mb-4 text-center">
+                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid" style="max-width:400px;" />
             </div>
 
             <!-- Thông tin sản phẩm -->
@@ -18,7 +21,7 @@
                     <p>@Model.Description</p>
                 </div>
 
-                <div class="mt-4 d-flex gap-2">
+                <div class="mt-4 d-flex gap-2 flex-wrap">
                     <a asp-controller="Order" asp-action="Add" asp-route-id="@Model.Id" class="btn btn-primary">
                         Thêm vào giỏ hàng
                     </a>
@@ -29,6 +32,33 @@
             </div>
         </div>
 
-       
+        <!-- Specifications -->
+        @if (specs != null && specs.Any())
+        {
+            <div class="row mt-5 justify-content-center">
+                <div class="col-lg-10 col-md-12">
+                    <h5 class="text-center mb-3"><strong>Thông số kỹ thuật</strong></h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Thông số</th>
+                                    <th>Giá trị</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var s in specs)
+                                {
+                                    <tr>
+                                        <td>@s.Key</td>
+                                        <td>@Html.Raw(s.Value.Replace("\n", "<br/>"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </section>

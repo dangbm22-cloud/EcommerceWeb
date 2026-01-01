@@ -3,10 +3,10 @@
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Chi tiết sản phẩm";
+    var specs = ViewBag.Specifications as List<EcommerceWeb.ViewModels.SpecificationItem>;
 }
 
 <div class="container mt-4">
-    @* Thông tin sản phẩm khi nhấn vào*@
     <h2>@Model.Name</h2>
 
     <p><strong>Giá:</strong> @Model.Price.ToString("N0") VNĐ</p>
@@ -19,6 +19,29 @@
         <div class="mb-3">
             <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid" style="max-width:300px;" />
         </div>
+    }
+
+    <!-- Specifications -->
+    @if (specs != null && specs.Any())
+    {
+        <h5>Thông số kỹ thuật</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Thông số</th>
+                    <th>Giá trị</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in specs)
+                {
+                    <tr>
+                        <td>@s.Key</td>
+                        <td>@Html.Raw(s.Value.Replace("\n", "<br/>"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
 
     <div class="mt-3">

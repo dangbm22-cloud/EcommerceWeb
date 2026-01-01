@@ -1,7 +1,9 @@
 ﻿using EcommerceWeb.Data;
 using EcommerceWeb.Models;
+using EcommerceWeb.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Linq;
 
 public class ProductController : Controller
@@ -50,11 +52,15 @@ public class ProductController : Controller
             .Include(p => p.Category)
             .FirstOrDefault(p => p.Id == id);
 
-        if (product == null)
-        {
-            return NotFound();
-        }
+        if (product == null) return NotFound();
 
+        var specs = string.IsNullOrEmpty(product.Specifications)
+            ? new List<SpecificationItem>()
+            : JsonConvert.DeserializeObject<List<SpecificationItem>>(product.Specifications);
+
+        ViewBag.Specifications = specs;
         return View(product);
     }
+
+
 }
