@@ -1,6 +1,6 @@
 ﻿@model EcommerceWeb.ViewModels.ProductViewModel
 @using Microsoft.AspNetCore.Mvc.Rendering
-
+<!--Làm ơn đọc cái note t ghi trước khi nhắn hỏi-->
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Thêm sản phẩm mới";
@@ -52,7 +52,7 @@
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>
 
-                <!-- URL ảnh -->
+                <!-- URL ảnh nếu đưa ảnh vào project rồi -->
                 <div class="mb-3">
                     <label asp-for="ImageUrl" class="form-label">Nhập URL ảnh (tùy chọn)</label>
                     <input asp-for="ImageUrl" class="form-control" />
@@ -62,31 +62,13 @@
                 <!-- Specifications -->
                 <div class="mb-3">
                     <h5>Thông số kỹ thuật</h5>
-                    <div id="specifications">
-                        @for (int i = 0; i < Model.Specifications.Count; i++)
-                        {
-                            <div class="row mb-2 spec-item">
-                                <div class="col-md-5">
-                                    <input type="text" name="Specifications[@i].Key"
-                                           value="@Model.Specifications[i].Key"
-                                           class="form-control" placeholder="Thông số" />
-                                </div>
-                                <div class="col-md-6">
-                                    <textarea name="Specifications[@i].Value"
-                                          class="form-control"
-                                          placeholder="Giá trị">@Model.Specifications[i].Value</textarea>
-                                </div>
-                                <div class="col-md-1">
-                                    <button type="button" class="btn btn-danger" onclick="removeSpec(this)">X</button>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <button type="button" class="btn btn-secondary" onclick="addSpec()">+ Thêm thông số</button>
+                    <textarea name="SpecificationsText" class="form-control" rows="6"
+                              placeholder="Mỗi dòng: Thông số: Giá trị"></textarea>
+                    <small class="text-muted">Ví dụ: Socket: LGA 1151</small>
                 </div>
             </div>
 
-            <!-- Upload ảnh -->
+            <!-- Upload ảnh nếu có ảnh ở ngoài-->
             <div class="col-md-4">
                 <div class="mb-3">
                     <label class="form-label">Upload ảnh sản phẩm</label>
@@ -105,33 +87,6 @@
 </div>
 
 @section Scripts {
-    <script>
-        let specIndex = @Model.Specifications.Count;
-
-        function addSpec() {
-            const container = document.getElementById("specifications");
-            const row = document.createElement("div");
-            row.className = "row mb-2 spec-item";
-            row.innerHTML = `
-                <div class="col-md-5">
-                    <input type="text" name="Specifications[${specIndex}].Key" class="form-control" placeholder="Thông số" />
-                </div>
-                <div class="col-md-6">
-                    <textarea name="Specifications[${specIndex}].Value" class="form-control" placeholder="Giá trị"></textarea>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-danger" onclick="removeSpec(this)">X</button>
-                </div>
-            `;
-            container.appendChild(row);
-            specIndex++;
-        }
-
-        function removeSpec(button) {
-            const row = button.closest(".spec-item");
-            row.remove();
-        }
-    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

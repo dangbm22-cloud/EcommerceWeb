@@ -16,36 +16,39 @@
 
         <!-- Tên sản phẩm -->
         <div class="mb-3">
-            <label asp-for="Name"></label>
+            <label asp-for="Name" class="form-label"></label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
         <!-- Giá -->
         <div class="mb-3">
-            <label asp-for="Price"></label>
+            <label asp-for="Price" class="form-label"></label>
             <input asp-for="Price" class="form-control" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
 
         <!-- Số lượng tồn -->
         <div class="mb-3">
-            <label asp-for="Stock"></label>
+            <label asp-for="Stock" class="form-label"></label>
             <input asp-for="Stock" class="form-control" />
             <span asp-validation-for="Stock" class="text-danger"></span>
         </div>
 
         <!-- Mô tả -->
         <div class="mb-3">
-            <label asp-for="Description"></label>
-            <textarea asp-for="Description" class="form-control"></textarea>
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
         <!-- Danh mục -->
         <div class="mb-3">
-            <label asp-for="CategoryId">Danh mục</label>
-            <select asp-for="CategoryId" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))" class="form-control"></select>
+            <label asp-for="CategoryId" class="form-label">Danh mục</label>
+            <select asp-for="CategoryId" class="form-select"
+                    asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))">
+                <option value="">-- Chọn danh mục --</option>
+            </select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
 
@@ -58,37 +61,21 @@
             }
         </div>
 
-        <!-- Upload ảnh mới -->
+        <!-- Upload ảnh mới nếu muốn -->
         <div class="mb-3">
-            <label for="ImageFile">Chọn ảnh mới (nếu muốn thay)</label>
-            <input type="file" name="ImageFile" class="form-control" />
+            <label for="ImageFile" class="form-label">Chọn ảnh mới (nếu muốn thay)</label>
+            <input type="file" name="ImageFile" class="form-control" accept="image/*" />
             <small class="text-muted">Hỗ trợ JPG, PNG, WEBP, tối đa ~5MB.</small>
         </div>
 
         <!-- Specifications -->
         <div class="mb-3">
             <h5>Thông số kỹ thuật</h5>
-            <div id="specifications">
-                @for (int i = 0; i < Model.Specifications.Count; i++)
-                {
-                    <div class="row mb-2 spec-item">
-                        <div class="col-md-5">
-                            <input type="text" name="Specifications[@i].Key"
-                                   value="@Model.Specifications[i].Key"
-                                   class="form-control" placeholder="Thông số" />
-                        </div>
-                        <div class="col-md-6">
-                            <textarea name="Specifications[@i].Value"
-                                  class="form-control"
-                                  placeholder="Giá trị">@Model.Specifications[i].Value</textarea>
-                        </div>
-                        <div class="col-md-1">
-                            <button type="button" class="btn btn-danger" onclick="removeSpec(this)">X</button>
-                        </div>
-                    </div>
-                }
-            </div>
-            <button type="button" class="btn btn-secondary" onclick="addSpec()">+ Thêm thông số</button>
+            <textarea name="SpecificationsText" class="form-control" rows="6" placeholder="Mỗi dòng: Thông số: Giá trị">
+                @string.Join("\n", (Model.Specifications ?? new List<EcommerceWeb.ViewModels.SpecificationItem>())
+                .Select(s => $"{s.Key}: {s.Value}"))
+            </textarea>
+            <small class="text-muted">Ví dụ: Socket: LGA 1151</small>
         </div>
 
         <!-- Nút lưu -->
@@ -98,33 +85,6 @@
 </div>
 
 @section Scripts {
-    <script>
-        let specIndex = @Model.Specifications.Count;
-
-        function addSpec() {
-            const container = document.getElementById("specifications");
-            const row = document.createElement("div");
-            row.className = "row mb-2 spec-item";
-            row.innerHTML = `
-                <div class="col-md-5">
-                    <input type="text" name="Specifications[${specIndex}].Key" class="form-control" placeholder="Thông số" />
-                </div>
-                <div class="col-md-6">
-                    <textarea name="Specifications[${specIndex}].Value" class="form-control" placeholder="Giá trị"></textarea>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-danger" onclick="removeSpec(this)">X</button>
-                </div>
-            `;
-            container.appendChild(row);
-            specIndex++;
-        }
-
-        function removeSpec(button) {
-            const row = button.closest(".spec-item");
-            row.remove();
-        }
-    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

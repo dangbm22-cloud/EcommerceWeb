@@ -1,4 +1,5 @@
 ﻿using EcommerceWeb.Data;
+using EcommerceWeb.Helpers;
 using EcommerceWeb.Models;
 using EcommerceWeb.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -62,11 +63,22 @@ namespace EcommerceWeb.Controllers
         // Tạo sản phẩm mới (POST + upload ảnh + Specifications)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(ProductViewModel vm, IFormFile? ImageFile)
+        public IActionResult Create(ProductViewModel vm, IFormFile? ImageFile, string SpecificationsText)
         {
             ViewBag.Categories = _context.Categories.ToList();
 
             if (!ModelState.IsValid) return View(vm);
+
+            // Parse SpecificationsText bằng Helper
+            var specsList = SpecificationHelper.ParseSpecifications(SpecificationsText, out var errors);
+            if (errors.Any())
+            {
+                foreach (var err in errors)
+                {
+                    ModelState.AddModelError("SpecificationsText", err);
+                }
+                return View(vm);
+            }
 
             var product = new Product
             {
@@ -76,10 +88,10 @@ namespace EcommerceWeb.Controllers
                 Stock = vm.Stock,
                 CategoryId = vm.CategoryId,
                 ImageUrl = vm.ImageUrl,
-                Specifications = JsonConvert.SerializeObject(vm.Specifications)
+                Specifications = JsonConvert.SerializeObject(specsList)
             };
 
-            // Xử lý upload ảnh
+            // Upload ảnh (giữ nguyên logic cũ)
             if (ImageFile != null && ImageFile.Length > 0)
             {
                 const long maxBytes = 5 * 1024 * 1024;
@@ -150,10 +162,10 @@ namespace EcommerceWeb.Controllers
             return View(vm);
         }
 
-        // Sửa sản phẩm (POST + Specifications + upload ảnh)
+        // Sửa sản phẩm (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ProductViewModel vm, IFormFile? ImageFile)
+        public async Task<IActionResult> Edit(int id, ProductViewModel vm, IFormFile? ImageFile, string SpecificationsText)
         {
             if (id != vm.Id) return NotFound();
 
@@ -166,14 +178,26 @@ namespace EcommerceWeb.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product == null) return NotFound();
 
+            // Parse SpecificationsText bằng Helper
+            var specsList = SpecificationHelper.ParseSpecifications(SpecificationsText, out var errors);
+            if (errors.Any())
+            {
+                foreach (var err in errors)
+                {
+                    ModelState.AddModelError("SpecificationsText", err);
+                }
+                ViewBag.Categories = _context.Categories.ToList();
+                return View(vm);
+            }
+
             product.Name = vm.Name;
             product.Price = vm.Price;
             product.Description = vm.Description;
             product.Stock = vm.Stock;
             product.CategoryId = vm.CategoryId;
-            product.Specifications = JsonConvert.SerializeObject(vm.Specifications);
+            product.Specifications = JsonConvert.SerializeObject(specsList);
 
-            // Nếu có upload ảnh mới
+            // Upload ảnh (giữ nguyên logic cũ)
             if (ImageFile != null && ImageFile.Length > 0)
             {
                 const long maxBytes = 5 * 1024 * 1024;
@@ -213,12 +237,10 @@ namespace EcommerceWeb.Controllers
             }
             else
             {
-                // Nếu không upload ảnh mới
                 if (!string.IsNullOrEmpty(vm.ImageUrl))
                 {
-                    product.ImageUrl = vm.ImageUrl; // nếu Admin nhập URL mới
+                    product.ImageUrl = vm.ImageUrl;
                 }
-                // nếu vm.ImageUrl rỗng thì giữ nguyên ảnh cũ
             }
 
             _context.Update(product);
