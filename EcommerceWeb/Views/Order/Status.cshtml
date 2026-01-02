@@ -1,0 +1,62 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model EcommerceWeb.Models.Order
+
+<section class="order-status spad">
+    <div class="container">
+        <div class="text-center">
+            <h2>📦 Trạng thái đơn hàng</h2>
+            <p>Mã đơn hàng: <strong>@Model.Id</strong></p>
+            <p>Ngày tạo: @Model.CreatedAt.ToLocalTime()</p>
+            <p>Trạng thái hiện tại: <span class="badge badge-info">@Model.Status</span></p>
+        </div>
+
+        <div class="order-info mt-4">
+            <h4>Thông tin khách hàng</h4>
+            <ul>
+                <li><strong>Khách hàng:</strong> @Model.FullName</li>
+                <li><strong>Điện thoại:</strong> @Model.Phone</li>
+                <li><strong>Email:</strong> @Model.Email</li>
+                <li><strong>Địa chỉ:</strong> @Model.Address, @Model.City</li>
+                <li><strong>Phương thức thanh toán:</strong> @Model.PaymentMethod</li>
+            </ul>
+        </div>
+
+        <div class="order-details mt-4">
+            <h4>Sản phẩm trong đơn</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Details)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.UnitPrice</td>
+                            <td>@(item.UnitPrice* item.Quantity)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="order-total text-right mt-3">
+            <p><strong>Tạm tính:</strong> @Model.Subtotal</p>
+            <p><strong>Tổng cộng:</strong> @Model.Total</p>
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-controller="Home" asp-action="Index" class="site-btn">Tiếp tục mua sắm</a>
+        </div>
+    </div>
+</section>

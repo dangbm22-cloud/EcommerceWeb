@@ -1,0 +1,64 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model EcommerceWeb.Models.Order
+
+<section class="order-success spad">
+    <div class="container">
+        <div class="text-center">
+            <h2>🎉 Đặt hàng thành công!</h2>
+            <p>Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.</p>
+        </div>
+
+        <div class="order-info mt-4">
+            <h4>Thông tin đơn hàng</h4>
+            <ul>
+                <li><strong>Mã đơn hàng:</strong> @Model.Id</li>
+                <li><strong>Ngày tạo:</strong> @Model.CreatedAt.ToLocalTime()</li>
+                <li><strong>Khách hàng:</strong> @Model.FullName</li>
+                <li><strong>Điện thoại:</strong> @Model.Phone</li>
+                <li><strong>Email:</strong> @Model.Email</li>
+                <li><strong>Địa chỉ:</strong> @Model.Address, @Model.City</li>
+                <li><strong>Phương thức thanh toán:</strong> @Model.PaymentMethod</li>
+                <li><strong>Trạng thái:</strong> @Model.Status</li>
+            </ul>
+        </div>
+
+        <div class="order-details mt-4">
+            <h4>Sản phẩm</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Details)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.UnitPrice</td>
+                            <td>@(item.UnitPrice* item.Quantity)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="order-total text-right mt-3">
+            <p><strong>Tạm tính:</strong> @Model.Subtotal</p>
+            <p><strong>Tổng cộng:</strong> @Model.Total</p>
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-controller="Home" asp-action="Index" class="site-btn">Tiếp tục mua sắm</a>
+            <a asp-controller="Order" asp-action="Status" asp-route-id="@Model.Id" class="site-btn">Xem trạng thái đơn hàng</a>
+        </div>
+    </div>
+</section>

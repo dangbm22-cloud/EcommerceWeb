@@ -141,15 +141,17 @@ ol {
 }
 
 .site-btn {
+	font-family: 'Roboto', sans-serif !important;
 	font-size: 14px;
-	color: #ffffff;
 	font-weight: 800;
 	text-transform: uppercase;
-	display: inline-block;
-	padding: 13px 30px 12px;
+	color: #ffffff;
 	background: #007bff;
 	border: none;
+	padding: 13px 30px 12px;
+	display: inline-block;
 }
+
 
 /* Preloder */
 
@@ -512,6 +514,12 @@ ol {
 	text-align: center;
 	line-height: 18px;
 	z-index: 10;
+}
+
+.cart-img {
+	width: 80px;
+	height: 80px;
+	object-fit: cover;
 }
 
 

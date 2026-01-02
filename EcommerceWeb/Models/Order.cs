@@ -5,37 +5,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceWeb.Models
 {
-    public enum OrderStatus //trạng thái đơn hàng
-    {
-        Pending, //Đang chờ xử lý
-        Paid, //Đã thanh toán (nếu có thanh toán online)
-        Shipped, //Đã giao hàng
-        Completed, //Hoàn thành
-        Cancelled //Đã hủy
-    }
-
     public class Order
     {
         public int Id { get; set; }
-        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+        public string? UserId { get; set; } // nếu có đăng nhập
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required, MaxLength(128)]
-        public string CustomerName { get; set; } = string.Empty;
-
-        [Required, MaxLength(20)]
-        public string Phone { get; set; } = string.Empty;
-
-        [Required, MaxLength(256)]
-        public string Address { get; set; } = string.Empty;
-
-        [Required, MaxLength(32)]
+        // Thông tin khách hàng
+        public string FullName { get; set; } = "";
+        public string Phone { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Address { get; set; } = "";
+        public string City { get; set; } = "";
+        public string Notes { get; set; } = "";
         public string PaymentMethod { get; set; } = "COD";
 
-        public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        // Trạng thái đơn hàng
+        public string Status { get; set; } = "Pending"; // mặc định Pending
 
-        [Precision(18, 2)]
-        public decimal TotalAmount { get; set; }
+        // Tổng tiền
+        public decimal Subtotal { get; set; }
+        public decimal Total { get; set; }
 
-        public List<OrderItem> Items { get; set; } = new();
+        public List<OrderDetail> Details { get; set; } = new();
+
     }
 }
