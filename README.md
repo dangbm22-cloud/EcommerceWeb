@@ -50,6 +50,8 @@ Tổng hợp chức năng của dự án:
   
   1. Quản lý doanh thu
 
+  2. Quản lý đơn hàng
+
 ************** Chưa làm *************
   Admin
   1. Quản lý tài khoản người dùng
