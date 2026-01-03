@@ -14,13 +14,13 @@ Hệ thống hướng tới sự dễ sử dụng, trực quan và có khả nă
 
 Thành viên tham dư thực hiện dự án:
 
-  1. Bùi Minh Đăng - code chính, ghi nhận vào tổng hợp chức năng
+  1. Bùi Minh Đăng 
 
-  2. Đỗ Quốc Vĩnh Khánh - thiết kế Diagram, viết báo cáo, hỗ trợ thực hiện dự án
+  2. Đỗ Quốc Vĩnh Khánh 
 
-  3. Nguyễn Gia Trí - Vẽ bản phác thảo dự án, tìm template, hỗ trợ hiện hiện dự án
+  3. Nguyễn Gia Trí 
 
-  4. 
+  4. Phạm Công Khánh
 
 
 
