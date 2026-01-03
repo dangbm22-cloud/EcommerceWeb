@@ -186,5 +186,39 @@ namespace EcommerceWeb.Controllers
 
             return View(orders); // MyOrders.cshtml
         }
+
+        [HttpPost]
+        public IActionResult Cancel(int id)
+        {
+            var order = _context.Orders.Find(id);
+            if (order == null) return NotFound();
+
+            // Chỉ cho phép hủy khi dang ở trang thái Pending
+            if (order.UserId == User.Identity?.Name && order.Status == "Pending")
+            {
+                order.Status = "CancelledByCustomer";
+                _context.SaveChanges();
+            }
+
+            //Chuyển qua trang Status để hiển thị trạng thái mới
+            return RedirectToAction("Status", new { id });
+        }
+
+        [HttpPost]
+        public IActionResult Complete(int id)
+        {
+            var order = _context.Orders.Find(id);
+            if (order == null) return NotFound();
+
+            // chỉ cho phép xác nhận khi Shipped
+            if (order.UserId == User.Identity?.Name && order.Status == "Shipped")
+            {
+                order.Status = "Completed";
+                _context.SaveChanges();
+            }
+
+            // Chuyển qua trang Status để hiển thị trạng thái mới
+            return RedirectToAction("Status", new { id });
+        }
     }
 }

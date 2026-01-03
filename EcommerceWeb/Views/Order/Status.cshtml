@@ -1,8 +1,7 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Trạng thái đơn hàng";
 }
+
 @model EcommerceWeb.Models.Order
 
 <section class="order-status spad">
@@ -11,7 +10,40 @@
             <h2>📦 Trạng thái đơn hàng</h2>
             <p>Mã đơn hàng: <strong>@Model.Id</strong></p>
             <p>Ngày tạo: @Model.CreatedAt.ToLocalTime()</p>
-            <p>Trạng thái hiện tại: <span class="badge badge-info">@Model.Status</span></p>
+            <p>
+                Trạng thái hiện tại:
+                <span class="badge badge-info">
+                    @EcommerceWeb.Helpers.OrderStatusHelper.GetClientStatus(Model.Status)
+                </span>
+            </p>
+        </div>
+
+        <div class="text-center mt-3">
+            @* Nếu đơn chưa kết thúc *@
+            @if (Model.Status != "Completed"
+                        && Model.Status != "CancelledByAdmin"
+                        && Model.Status != "CancelledByCustomer")
+            {
+                @* Nút hủy đơn: chỉ hiện khi Pending *@
+                if (Model.Status == "Pending")
+                {
+                    <button type="button" class="site-btn btn-danger" onclick="confirmCancel('@Model.Id')">
+                        Hủy đơn hàng
+                    </button>
+                }
+
+                @* Nút xác nhận nhận hàng: chỉ hiện khi Shipped *@
+                if (Model.Status == "Shipped")
+                {
+                    <button type="button" class="site-btn btn-success" onclick="confirmReceived('@Model.Id')">
+                        Tôi đã nhận được hàng
+                    </button>
+                }
+            }
+            else
+            {
+                <p class="text-muted"><em>Đơn hàng đã kết thúc, không thể thao tác nữa.</em></p>
+            }
         </div>
 
         <div class="order-info mt-4">
@@ -42,8 +74,8 @@
                         <tr>
                             <td>@item.ProductName</td>
                             <td>@item.Quantity</td>
-                            <td>@item.UnitPrice</td>
-                            <td>@(item.UnitPrice* item.Quantity)</td>
+                            <td>@string.Format("{0:N0}", item.UnitPrice) VND</td>
+                            <td>@string.Format("{0:N0}", item.UnitPrice * item.Quantity) VND</td>
                         </tr>
                     }
                 </tbody>
@@ -51,8 +83,8 @@
         </div>
 
         <div class="order-total text-right mt-3">
-            <p><strong>Tạm tính:</strong> @Model.Subtotal</p>
-            <p><strong>Tổng cộng:</strong> @Model.Total</p>
+            <p><strong>Tạm tính:</strong> @string.Format("{0:N0}", Model.Subtotal) VND</p>
+            <p><strong>Tổng cộng:</strong> @string.Format("{0:N0}", Model.Total) VND</p>
         </div>
 
         <div class="text-center mt-4">
@@ -60,3 +92,41 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        function confirmCancel(orderId) {
+            if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
+                const form = document.createElement("form");
+                form.method = "post";
+                form.action = "/Order/Cancel"; // cần tạo action Cancel trong OrderController
+
+                const idInput = document.createElement("input");
+                idInput.type = "hidden";
+                idInput.name = "id";
+                idInput.value = orderId;
+                form.appendChild(idInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function confirmReceived(orderId) {
+            if (confirm("Bạn có chắc chắn đã nhận được hàng?")) {
+                const form = document.createElement("form");
+                form.method = "post";
+                form.action = "/Order/Complete"; // cần tạo action Complete trong OrderController
+
+                const idInput = document.createElement("input");
+                idInput.type = "hidden";
+                idInput.name = "id";
+                idInput.value = orderId;
+                form.appendChild(idInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}
