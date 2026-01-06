@@ -13,7 +13,7 @@ h4,
 h5,
 h6 {
 	margin: 0;
-	margin-top: 6rem;
+	margin-top: 3rem;
 	color: #111111;
 	font-weight: 400;
 	font-family: "Cairo", sans-serif;
@@ -591,6 +591,14 @@ ol {
 	color: #ffffff;
 }
 
+.hero__categories__list {
+	display: none;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+
 .hero__categories ul {
 	border: 1px solid #ebebeb;
 	padding-left: 40px;
@@ -971,37 +979,51 @@ ol {
 			}
 
 	.latest-product__item {
-		margin-bottom: 20px;
-		overflow: hidden;
-		display: block;
+		padding: 10px;
+		border: 1px solid #eee;
+		background-color: #fff;
+		display: block; /* bỏ flex để tránh giãn */
+		text-align: center;
+		box-sizing: border-box;
 	}
+
+
+
 
 	.latest-product__item__pic {
-		float: left;
-		margin-right: 26px;
+		width: 100%;
+		height: 120px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 6px;
 	}
 
+
 		.latest-product__item__pic img {
-			height: 110px;
-			width: 110px;
+			max-height: 100%;
+			max-width: 100%;
+			object-fit: contain;
+			display: block;
 		}
 
 	.latest-product__item__text {
-		overflow: hidden;
-		padding-top: 10px;
+		margin-top: 0;
+		padding: 0;
 	}
 
 		.latest-product__item__text h6 {
-			color: #252525;
-			margin-bottom: 8px;
+			font-size: 0.95rem;
+			font-weight: 500;
+			margin-bottom: 4px;
 		}
 
 		.latest-product__item__text span {
-			font-size: 18px;
-			display: block;
-			color: #252525;
-			font-weight: 700;
+			font-size: 0.9rem;
+			color: #d0021b;
+			font-weight: bold;
 		}
+
 	/*---------------------
   Form BLog
 -----------------------*/
@@ -3049,9 +3071,7 @@ ol {
 			border-bottom: none !important;
 		}
 
-		.humberger__menu__wrapper .slicknav_nav {
-			display: block !important;
-		}
+
 
 		.humberger__menu__wrapper .slicknav_menu {
 			background: transparent;

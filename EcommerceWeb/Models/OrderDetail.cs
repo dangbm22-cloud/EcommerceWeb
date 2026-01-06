@@ -1,4 +1,6 @@
-﻿namespace EcommerceWeb.Models
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+
+namespace EcommerceWeb.Models
 {
     public class OrderDetail
     {
